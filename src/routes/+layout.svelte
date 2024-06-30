@@ -8,4 +8,8 @@
 	:global(html) {
 		background-color: theme(colors.black);
 	}
+
+	:global(body) {
+		@apply h-screen w-screen;
+	}
 </style>
