@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { colors } from '$lib/colors';
 	import { v4 as uuid } from 'uuid';
 	import { faCaretDown, faCaretUp, faXmark } from '@fortawesome/free-solid-svg-icons/index';
 	import { flip } from 'svelte/animate';
@@ -12,17 +11,12 @@
 	import PlayerAdd from './playerAdd.svelte';
 	import Fa from 'svelte-fa';
 
-	let players: PartialUser[] = [
-		{ name: 'Anna', id: uuid(), color: colors[6], order: 1 },
-		{ name: 'Bertram', id: uuid(), color: colors[2], order: 2 },
-		{ name: 'Otto', id: uuid(), color: colors[4], order: 3 },
-		{ name: 'Martin', id: uuid(), color: colors[7], order: 4 }
-	];
 	const idRegex =
 		/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}-terra-game/;
 
 	$: maxOrder = Math.max(...players.map(({ order }) => order));
 	$: minOrder = Math.min(...players.map(({ order }) => order));
+	let players: PartialUser[] = [];
 	let previousGames: { start: Date; end: Date; id: string }[] = [];
 
 	$: players.sort((a, b) => a.order - b.order);
