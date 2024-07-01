@@ -14,10 +14,11 @@
 	const idRegex =
 		/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}-terra-game/;
 
-	$: maxOrder = Math.max(...players.map(({ order }) => order));
-	$: minOrder = Math.min(...players.map(({ order }) => order));
 	let players: PartialUser[] = [];
 	let previousGames: { start: Date; end: Date; id: string }[] = [];
+
+	$: maxOrder = players.length > 0 ? Math.max(...players.map(({ order }) => order)) : -1;
+	$: minOrder = Math.min(...players.map(({ order }) => order), -1);
 
 	$: players.sort((a, b) => a.order - b.order);
 
