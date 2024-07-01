@@ -10,6 +10,7 @@
 
 	import UserTimer from './userTimer.svelte';
 	import Controls from './controls.svelte';
+	import Sidebar from './sidebar/index.svelte';
 
 	$: [cols, rows] = getGridSize($players);
 
@@ -75,12 +76,13 @@
 	});
 </script>
 
-<main class="relative h-full">
-	<Controls {running} />
+<main class="relative h-full flex">
+	<Sidebar players={$players} />
 	<section
 		style="grid-template: repeat({rows}, 1fr) / repeat({cols}, 1fr);"
-		class="grid h-full p-4 {$running ? '' : 'saturate-50'} transition-all"
+		class="relative grid h-full grow p-4 {$running ? '' : 'saturate-50'} transition-all"
 	>
+		<Controls {running} />
 		{#each $players as player}
 			<UserTimer {player} running={$running} />
 		{/each}
