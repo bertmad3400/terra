@@ -10,7 +10,6 @@ export function undoAction() {
 				} else if (player.id === action.to.id) {
 					player.currentRound.active = false;
 					player.currentRound.times.pop();
-					player.currentRound.times.push(0);
 				}
 			});
 
@@ -28,7 +27,6 @@ export function undoAction() {
 				} else if (action.to && player.id === action.to.id) {
 					player.currentRound.active = false;
 					player.currentRound.times.pop();
-					player.currentRound.times.push(0);
 				}
 			});
 
@@ -81,7 +79,10 @@ export function finishTurn(finishedPlayer: Player) {
 
 		players.forEach((player) => {
 			if (player.id === finishedPlayer.id) player.currentRound.active = false;
-			if (player.id === nextPlayer.id) player.currentRound.active = true;
+			if (player.id === nextPlayer.id) {
+				player.currentRound.active = true;
+				player.currentRound.times.push(0);
+			}
 		});
 
 		lastActions.update((actions) => [
@@ -115,13 +116,16 @@ export function passRound(passingPlayer: Player) {
 					times: player.currentRound.times,
 					totalTime: player.currentRound.times.reduce((a, b) => a + b, 0)
 				});
-				player.currentRound.times = [0];
+				player.currentRound.times = [];
 			}
 		});
 
 		if (nextPlayer)
 			players.forEach((player) => {
-				if (player.id === nextPlayer.id) player.currentRound.active = true;
+				if (player.id === nextPlayer.id) {
+					player.currentRound.active = true;
+					player.currentRound.times.push(0);
+				}
 			});
 
 		lastActions.update((actions) => [
@@ -159,7 +163,8 @@ export function tick(running: boolean) {
 		players.forEach((player) => {
 			if (!player.currentRound.active) return;
 
-			player.currentRound.times[0] += 1;
+			const time = player.currentRound.times.pop();
+			player.currentRound.times.push(time ? time + 1 : 1);
 		});
 
 		return players;

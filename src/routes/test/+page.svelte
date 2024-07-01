@@ -31,7 +31,7 @@
 					...defaultRound,
 					order: 0,
 					active: true,
-					times: [40, 3500]
+					times: [40, 3500, 0]
 				}
 			},
 			{
@@ -41,7 +41,7 @@
 				rounds: [],
 				currentRound: {
 					...defaultRound,
-					times: [0],
+					times: [],
 					order: 1,
 					passed: true
 				}
@@ -53,7 +53,7 @@
 				rounds: [],
 				currentRound: {
 					...defaultRound,
-					times: [0],
+					times: [],
 					order: 2
 				}
 			},
@@ -64,7 +64,7 @@
 				rounds: [],
 				currentRound: {
 					...defaultRound,
-					times: [0],
+					times: [],
 					order: 3
 				}
 			}
