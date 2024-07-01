@@ -4,6 +4,8 @@
 	import { faCaretDown, faCaretUp, faXmark } from '@fortawesome/free-solid-svg-icons/index';
 	import { flip } from 'svelte/animate';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { getReadableDate, getReadableTime } from '$lib/common';
 
 	import type { GameState, PartialUser } from '$lib/types';
 
@@ -16,9 +18,12 @@
 		{ name: 'Otto', id: uuid(), color: colors[4], order: 3 },
 		{ name: 'Martin', id: uuid(), color: colors[7], order: 4 }
 	];
+	const idRegex =
+		/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}-terra-game/;
 
 	$: maxOrder = Math.max(...players.map(({ order }) => order));
 	$: minOrder = Math.min(...players.map(({ order }) => order));
+	let previousGames: { start: Date; end: Date; id: string }[] = [];
 
 	$: players.sort((a, b) => a.order - b.order);
 
@@ -65,6 +70,20 @@
 
 		goto(`/${game.id}`);
 	}
+
+	onMount(() => {
+		Object.entries(localStorage).forEach(([k, v]) => {
+			console.log(k, idRegex.test(k));
+			if (!idRegex.test(k)) return;
+
+			const contents = JSON.parse(v);
+
+			previousGames = [
+				...previousGames,
+				{ start: new Date(contents.start), end: new Date(contents.end), id: contents.id }
+			];
+		});
+	});
 </script>
 
 <main class="h-full w-full p-6 grid grid-cols-[5fr_0fr_5fr] grid-rows-[6fr_4fr]">
@@ -144,8 +163,30 @@
 		/>
 	</section>
 
-	<section class="h-full">
-		<h2>Previous games</h2>
+	<section class="max-h-full p-4 min-h-0 flex flex-col">
+		<h2 class="mb-3">Previous games</h2>
+		<ul class="flex flex-col gap-3 min-h-0 overflow-y-auto">
+			{#each previousGames as { start, end, id }}
+				<li>
+					<a
+						href="/{id}"
+						class="
+            p-4 block
+            text-white
+            bg-white/10 hover:bg-white/20 rounded-xl
+            transition-colors duration-300
+          "
+					>
+						<h3 class="text-2xl font-bold flex justify-between">
+							{getReadableDate(start)}
+							<p class="font-light text-xl">
+								{getReadableTime(start)} - {getReadableTime(end)}
+							</p>
+						</h3>
+					</a>
+				</li>
+			{/each}
+		</ul>
 	</section>
 
 	<div class="mt-auto"></div>

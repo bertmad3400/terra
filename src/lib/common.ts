@@ -26,3 +26,19 @@ export function getGridSize(arr: any[]): [number, number] {
 
 	throw new Error(`Excedded max grid size with length of ${arr.length}`);
 }
+
+export function getReadableDate(time: Date | number | string, includeTime = false): string {
+	const date = typeof time !== 'object' ? new Date(time) : time;
+	return date.toLocaleDateString([], {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+		hour: includeTime ? '2-digit' : undefined,
+		minute: includeTime ? '2-digit' : undefined
+	});
+}
+
+export function getReadableTime(time: Date | number | string) {
+	const date = typeof time !== 'object' ? new Date(time) : time;
+	return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
