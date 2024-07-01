@@ -1,45 +1,93 @@
 <script lang="ts">
 	import { colors, type Color } from '$lib/colors';
 	import { v4 as uuid } from 'uuid';
-	import { faXmark } from '@fortawesome/free-solid-svg-icons/index';
+	import { faCaretDown, faCaretUp, faXmark } from '@fortawesome/free-solid-svg-icons/index';
+	import { flip } from 'svelte/animate';
 
 	import PlayerAdd from './playerAdd.svelte';
 	import Fa from 'svelte-fa';
 
-	let players: { name: string; id: string; color: Color }[] = [
-		{ name: 'Anna', id: uuid(), color: colors[6] },
-		{ name: 'Bertram', id: uuid(), color: colors[2] },
-		{ name: 'Otto', id: uuid(), color: colors[4] },
-		{ name: 'Martin', id: uuid(), color: colors[7] }
+	type Player = { name: string; id: string; color: Color; order: number };
+
+	let players: Player[] = [
+		{ name: 'Anna', id: uuid(), color: colors[6], order: 1 },
+		{ name: 'Bertram', id: uuid(), color: colors[2], order: 2 },
+		{ name: 'Otto', id: uuid(), color: colors[4], order: 3 },
+		{ name: 'Martin', id: uuid(), color: colors[7], order: 4 }
 	];
+
+	$: maxOrder = Math.max(...players.map(({ order }) => order));
+	$: minOrder = Math.min(...players.map(({ order }) => order));
+
+	$: players.sort((a, b) => a.order - b.order);
+
+	function flipOrder(currentPlayer: Player, delta: number) {
+		const newOrder = currentPlayer.order + delta;
+		const otherPlayer = players.find(({ order }) => order === newOrder);
+
+		if (!otherPlayer) return;
+
+		otherPlayer.order = currentPlayer.order;
+		currentPlayer.order = newOrder;
+
+		players = [
+			...players.filter((player) => player.id !== currentPlayer.id && player.id !== otherPlayer.id),
+			currentPlayer,
+			otherPlayer
+		];
+	}
 </script>
 
 <main class="h-full w-full p-6 grid grid-cols-[5fr_0fr_5fr] grid-rows-[6fr_4fr]">
 	<section class="h-full border-b mr-4 mb-4 p-4">
 		<h2 class="mb-4">Players</h2>
 		<ul class="flex flex-col gap-2">
-			{#each players as { name, id, color }}
-				<li class="relative w-full [&:hover>button]:opacity-100">
-					<button
-						on:click={() => (players = players.filter((player) => id != player.id))}
-						class="
-              w-full h-full absolute bg-black/50 opacity-0
-              flex justify-center items-center
-              transition-opacity
+			{#each players as player (player.id)}
+				{@const { name, order, color, id } = player}
+				<li
+					animate:flip={{ duration: 400 }}
+					style="background-color: {color.codes[500]};"
+					class="
+            w-full p-4 flex gap-2
+            border border-white
+            [&:hover>div.actions]:opacity-100
           "
-					>
-						<Fa icon={faXmark} class="text-3xl text-white" />
-					</button>
+				>
 					<div
-						style="background-color: {color.codes[500]};"
 						class="
-              p-4
-              border border-white
-              {color.light ? '' : 'text-white'} text-left
+              grow {color.light ? '' : 'text-white'} text-left
             "
 					>
 						<p class="font-bold text-3xl">{name}</p>
-						<p>{id}</p>
+						<p>Number {order}</p>
+					</div>
+
+					<div class="flex items-center gap-2 actions opacity-0 transition-opacity">
+						{#if order > minOrder}
+							<button
+								on:click={() => flipOrder(player, -1)}
+								class="player-action bg-transparent
+                  {color.light ? 'hover:bg-black/10' : 'text-white hover:bg-white/20'}"
+							>
+								<Fa icon={faCaretUp} />
+							</button>
+						{/if}
+						{#if order < maxOrder}
+							<button
+								on:click={() => flipOrder(player, 1)}
+								class="player-action bg-transparent transition-colors
+                {color.light ? 'hover:bg-black/10' : 'text-white hover:bg-white/20'}"
+							>
+								<Fa icon={faCaretDown} />
+							</button>
+						{/if}
+						<button
+							on:click={() => (players = players.filter((player) => player.id != id))}
+							class="player-action bg-transparent transition-colors
+              {color.light ? 'hover:bg-black/10' : 'text-white hover:bg-white/20'}"
+						>
+							<Fa icon={faXmark} />
+						</button>
 					</div>
 				</li>
 			{/each}
@@ -59,7 +107,10 @@
 		<PlayerAdd
 			reservedColors={players.map(({ color }) => color)}
 			on:add={(e) => {
-				players = [...players, { name: e.detail.name, color: e.detail.color, id: uuid() }];
+				players = [
+					...players,
+					{ name: e.detail.name, color: e.detail.color, id: uuid(), order: maxOrder + 1 }
+				];
 			}}
 		/>
 	</section>
@@ -101,6 +152,17 @@
 		& > div {
 			height: calc(100% - 1rem);
 			@apply mx-auto border w-0;
+		}
+	}
+
+	.player-action {
+		@apply flex justify-center items-center
+    w-12 h-12 grow-0
+    text-2xl
+    active:scale-95 transition-all;
+
+		:global(svg) {
+			@apply w-4 h-4;
 		}
 	}
 </style>
