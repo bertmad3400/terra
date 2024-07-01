@@ -42,8 +42,7 @@
 				currentRound: {
 					...defaultRound,
 					times: [],
-					order: 1,
-					passed: true
+					order: 1
 				}
 			},
 			{

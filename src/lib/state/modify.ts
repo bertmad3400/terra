@@ -1,5 +1,5 @@
 import type { Action, FinishTurnAction, PassAction, Player } from '$lib/types';
-import { players, lastActions } from './index';
+import { players, lastActions, running } from './index';
 
 export function undoAction() {
 	const undoFinish = (action: FinishTurnAction) =>
@@ -138,6 +138,23 @@ export function passRound(passingPlayer: Player) {
 			}
 		]);
 
+		return players;
+	});
+}
+
+export function endRound() {
+	running.set(false);
+	lastActions.set([]);
+	players.update((players) => {
+		players.forEach((player) => {
+			player.currentRound.active = false;
+			player.currentRound.passed = false;
+
+			if (player.currentRound.order === 0) {
+				player.currentRound.active = true;
+				player.currentRound.times.push(0);
+			}
+		});
 		return players;
 	});
 }
