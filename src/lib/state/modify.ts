@@ -161,7 +161,7 @@ export function tick(running: boolean) {
 
 	players.update((players) => {
 		players.forEach((player) => {
-			if (!player.currentRound.active) return;
+			if (!player.currentRound.active || player.currentRound.passed) return;
 
 			const time = player.currentRound.times.pop();
 			player.currentRound.times.push(time ? time + 1 : 1);
