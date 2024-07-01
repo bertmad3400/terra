@@ -17,6 +17,13 @@ export type Player = {
 	currentRound: RoundStats;
 };
 
+export type GameState = {
+	id: string;
+	start: string;
+	end: string;
+	players: Player[];
+};
+
 export type FinishTurnAction = { type: 'finishTurn'; from: Player; to: Player };
 export type PassAction = { type: 'pass'; previousOrder: number; from: Player; to: Player | null };
 

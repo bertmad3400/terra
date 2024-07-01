@@ -3,8 +3,9 @@
 	import { v4 as uuid } from 'uuid';
 	import { faCaretDown, faCaretUp, faXmark } from '@fortawesome/free-solid-svg-icons/index';
 	import { flip } from 'svelte/animate';
+	import { goto } from '$app/navigation';
 
-	import type { PartialUser } from '$lib/types';
+	import type { GameState, PartialUser } from '$lib/types';
 
 	import PlayerAdd from './playerAdd.svelte';
 	import Fa from 'svelte-fa';
@@ -37,7 +38,33 @@
 		];
 	}
 
-	function startGame() {}
+	function startGame() {
+		const game: GameState = {
+			id: `${uuid()}-terra-game`,
+			start: new Date().toISOString(),
+			end: new Date().toISOString(),
+			players: []
+		};
+
+		players.forEach((player, i) => {
+			game.players.push({
+				name: player.name,
+				id: player.id,
+				color: player.color,
+				rounds: [],
+				currentRound: {
+					passed: false,
+					active: false,
+					times: [],
+					order: i
+				}
+			});
+		});
+
+		localStorage.setItem(game.id, JSON.stringify(game));
+
+		goto(`/${game.id}`);
+	}
 </script>
 
 <main class="h-full w-full p-6 grid grid-cols-[5fr_0fr_5fr] grid-rows-[6fr_4fr]">
