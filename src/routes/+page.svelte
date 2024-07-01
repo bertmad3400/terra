@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { colors, type Color } from '$lib/colors';
+	import { colors } from '$lib/colors';
 	import { v4 as uuid } from 'uuid';
 	import { faCaretDown, faCaretUp, faXmark } from '@fortawesome/free-solid-svg-icons/index';
 	import { flip } from 'svelte/animate';
 
+	import type { PartialUser } from '$lib/types';
+
 	import PlayerAdd from './playerAdd.svelte';
 	import Fa from 'svelte-fa';
 
-	type Player = { name: string; id: string; color: Color; order: number };
-
-	let players: Player[] = [
+	let players: PartialUser[] = [
 		{ name: 'Anna', id: uuid(), color: colors[6], order: 1 },
 		{ name: 'Bertram', id: uuid(), color: colors[2], order: 2 },
 		{ name: 'Otto', id: uuid(), color: colors[4], order: 3 },
@@ -21,7 +21,7 @@
 
 	$: players.sort((a, b) => a.order - b.order);
 
-	function flipOrder(currentPlayer: Player, delta: number) {
+	function flipOrder(currentPlayer: PartialUser, delta: number) {
 		const newOrder = currentPlayer.order + delta;
 		const otherPlayer = players.find(({ order }) => order === newOrder);
 
@@ -36,6 +36,8 @@
 			otherPlayer
 		];
 	}
+
+	function startGame() {}
 </script>
 
 <main class="h-full w-full p-6 grid grid-cols-[5fr_0fr_5fr] grid-rows-[6fr_4fr]">
@@ -123,6 +125,7 @@
 
 	<section class="flex justify-center items-center mt-4 ml-4">
 		<button
+			on:click={startGame}
 			title={players.length < 1 ? 'No players have been created' : ''}
 			disabled={players.length < 1}
 			class="
