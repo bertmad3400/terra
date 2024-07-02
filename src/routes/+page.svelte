@@ -4,7 +4,7 @@
 	import { flip } from 'svelte/animate';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { formatTime, getReadableDate, getReadableTime } from '$lib/common';
+	import { formatTime, getPlayTotalTime, getReadableDate, getReadableTime } from '$lib/common';
 
 	import type { GameState, PartialUser } from '$lib/types';
 
@@ -71,21 +71,13 @@
 			if (!idRegex.test(k)) return;
 
 			const contents: GameState = JSON.parse(v);
-			const playTime = contents.players.reduce(
-				(sum, player) =>
-					sum +
-					player.rounds.reduce((sum, time) => sum + time.totalTime, 0) +
-					player.currentRound.times.reduce((sum, time) => sum + time, 0),
-				0
-			);
-
 			previousGames = [
 				...previousGames,
 				{
 					start: new Date(contents.start),
 					end: new Date(contents.end),
 					id: contents.id,
-					playTime: playTime
+					playTime: contents.players.reduce((sum, player) => sum + getPlayTotalTime(player), 0)
 				}
 			];
 		});

@@ -1,3 +1,5 @@
+import type { Player } from './types';
+
 export function formatTime(seconds: number) {
 	const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -41,4 +43,11 @@ export function getReadableDate(time: Date | number | string, includeTime = fals
 export function getReadableTime(time: Date | number | string) {
 	const date = typeof time !== 'object' ? new Date(time) : time;
 	return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+export function getPlayTotalTime(player: Player) {
+	return (
+		player.rounds.reduce((sum, { totalTime }) => sum + totalTime, 0) +
+		player.currentRound.times.reduce((sum, time) => sum + time, 0)
+	);
 }

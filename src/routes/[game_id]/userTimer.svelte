@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Player } from '$lib/types';
 
-	import { formatTime } from '$lib/common';
+	import { formatTime, getPlayTotalTime } from '$lib/common';
 	import { changeTime, finishTurn, passRound } from '$lib/state/modify';
 
 	import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
@@ -40,10 +40,7 @@
 			{player.name}
 		</h2>
 		<p class="text-5xl font-light {player.color.light ? '' : 'text-white'}">
-			{formatTime(
-				player.currentRound.times.reduce((a, b) => a + b, 0) +
-					player.rounds.reduce((sum, rounds) => sum + rounds.totalTime, 0)
-			)}
+			{formatTime(getPlayTotalTime(player))}
 		</p>
 	</button>
 	{#if player.currentRound.active}
