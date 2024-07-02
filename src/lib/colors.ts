@@ -20,31 +20,31 @@ export type ColorCodes = {
 export type Color = { codes: ColorCodes; name: string; light: boolean };
 
 const white: ColorCodes = {
-	50: '#fff',
-	100: '#fff',
-	200: '#fff',
-	300: '#fff',
-	400: '#fff',
-	500: '#fff',
-	600: '#fff',
-	700: '#fff',
-	800: '#fff',
-	900: '#fff',
-	950: '#fff'
+	50: '#ffffff',
+	100: '#ffffff',
+	200: '#ffffff',
+	300: '#ffffff',
+	400: '#ffffff',
+	500: '#ffffff',
+	600: '#ffffff',
+	700: '#ffffff',
+	800: '#ffffff',
+	900: '#ffffff',
+	950: '#ffffff'
 };
 
 const black: ColorCodes = {
-	50: '#000',
-	100: '#000',
-	200: '#000',
-	300: '#000',
-	400: '#000',
-	500: '#000',
-	600: '#000',
-	700: '#000',
-	800: '#000',
-	900: '#000',
-	950: '#000'
+	50: '#000000',
+	100: '#000000',
+	200: '#000000',
+	300: '#000000',
+	400: '#000000',
+	500: '#000000',
+	600: '#000000',
+	700: '#000000',
+	800: '#000000',
+	900: '#000000',
+	950: '#000000'
 };
 
 const brown: ColorCodes = {

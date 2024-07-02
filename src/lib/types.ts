@@ -24,6 +24,15 @@ export type GameState = {
 	players: Player[];
 };
 
+export type PlayerChartData = {
+	round: number;
+	turns: number;
+	name: string;
+	id: string;
+	time: number;
+	color: string;
+};
+
 export type FinishTurnAction = { type: 'finishTurn'; from: Player; to: Player };
 export type PassAction = { type: 'pass'; previousOrder: number; from: Player; to: Player | null };
 

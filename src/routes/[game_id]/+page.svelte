@@ -39,7 +39,7 @@
 </script>
 
 <main class="relative h-full flex">
-	<Sidebar players={$players} />
+	<Sidebar game={data.game} />
 	<section
 		style="grid-template: repeat({rows}, 1fr) / repeat({cols}, 1fr);"
 		class="relative grid h-full grow p-4 {$running ? '' : 'saturate-50'} transition-all"

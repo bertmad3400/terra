@@ -1,10 +1,10 @@
 import { error } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { LayoutLoad } from './$types';
 import type { GameState } from '$lib/types';
 
 export const ssr = false;
 
-export const load: PageLoad = ({ params }) => {
+export const load: LayoutLoad = ({ params }) => {
 	const id = params.game_id;
 
 	const idContents = localStorage.getItem(id);
