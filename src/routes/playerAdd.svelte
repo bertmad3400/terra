@@ -15,7 +15,6 @@
 	$: selectedColor = availableColors[0];
 
 	function add() {
-		console.log(name, 'Adding');
 		if (name.length < 1) return;
 
 		dispatch('add', { name, color: selectedColor });
