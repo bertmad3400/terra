@@ -4,7 +4,7 @@
 	import { flip } from 'svelte/animate';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { getReadableDate, getReadableTime } from '$lib/common';
+	import { formatTime, getReadableDate, getReadableTime } from '$lib/common';
 
 	import type { GameState, PartialUser } from '$lib/types';
 
@@ -15,7 +15,7 @@
 		/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}-terra-game/;
 
 	let players: PartialUser[] = [];
-	let previousGames: { start: Date; end: Date; id: string }[] = [];
+	let previousGames: { start: Date; end: Date; id: string; playTime: number }[] = [];
 
 	$: maxOrder = players.length > 0 ? Math.max(...players.map(({ order }) => order)) : -1;
 	$: minOrder = Math.min(...players.map(({ order }) => order), -1);
@@ -68,14 +68,25 @@
 
 	onMount(() => {
 		Object.entries(localStorage).forEach(([k, v]) => {
-			console.log(k, idRegex.test(k));
 			if (!idRegex.test(k)) return;
 
-			const contents = JSON.parse(v);
+			const contents: GameState = JSON.parse(v);
+			const playTime = contents.players.reduce(
+				(sum, player) =>
+					sum +
+					player.rounds.reduce((sum, time) => sum + time.totalTime, 0) +
+					player.currentRound.times.reduce((sum, time) => sum + time, 0),
+				0
+			);
 
 			previousGames = [
 				...previousGames,
-				{ start: new Date(contents.start), end: new Date(contents.end), id: contents.id }
+				{
+					start: new Date(contents.start),
+					end: new Date(contents.end),
+					id: contents.id,
+					playTime: playTime
+				}
 			];
 		});
 	});
@@ -161,7 +172,7 @@
 	<section class="max-h-full p-4 min-h-0 flex flex-col">
 		<h2 class="mb-3">Previous games</h2>
 		<ul class="flex flex-col gap-3 min-h-0 overflow-y-auto">
-			{#each previousGames as { start, end, id }}
+			{#each previousGames as { start, end, id, playTime }}
 				<li>
 					<a
 						href="/{id}"
@@ -175,7 +186,7 @@
 						<h3 class="text-2xl font-bold flex justify-between">
 							{getReadableDate(start)}
 							<p class="font-light text-xl">
-								{getReadableTime(start)} - {getReadableTime(end)}
+								{getReadableTime(start)} - {getReadableTime(end)} | {formatTime(playTime)}
 							</p>
 						</h3>
 					</a>
