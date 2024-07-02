@@ -3,6 +3,7 @@
 
 	import { fade, slide } from 'svelte/transition';
 	import { faArrowLeft, faChartSimple } from '@fortawesome/free-solid-svg-icons';
+	import { players } from '$lib/state';
 
 	import PlayerList from './playerList.svelte';
 	import Fa from 'svelte-fa';
@@ -11,10 +12,10 @@
 
 	let hidden: boolean = false;
 
-	$: passedPlayers = game.players
+	$: passedPlayers = $players
 		.filter((player) => player.currentRound.passed)
 		.sort((a, b) => a.currentRound.order - b.currentRound.order);
-	$: notPassedPlayers = game.players
+	$: notPassedPlayers = $players
 		.filter((player) => !player.currentRound.passed)
 		.sort((a, b) => a.currentRound.order - b.currentRound.order);
 </script>
