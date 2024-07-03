@@ -85,9 +85,9 @@
 </script>
 
 <main class="h-full w-full p-6 grid grid-cols-[5fr_0fr_5fr] grid-rows-[6fr_4fr]">
-	<section class="h-full border-b mr-4 mb-4 p-4">
+	<section class="h-full border-b mr-4 mb-4 p-4 min-h-0 flex flex-col">
 		<h2 class="mb-4">Players</h2>
-		<ul class="flex flex-col gap-2">
+		<ul class="flex flex-col gap-2 min-h-0 overflow-auto">
 			{#each players as player (player.id)}
 				{@const { name, order, color, id } = player}
 				<li
