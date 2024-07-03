@@ -45,6 +45,7 @@
 		{#each availableColors as currentColor}
 			{@const selected = currentColor.name === selectedColor.name}
 			<button
+				type="button"
 				on:click={() => (selectedColor = currentColor)}
 				title={currentColor.name}
 				style="background-color: {currentColor.codes[500]};"
