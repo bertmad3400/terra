@@ -21,7 +21,7 @@ export function getGridSize(arr: any[]): [number, number] {
 
 		if (col * row >= arr.length) return [col, row];
 
-		row = i;
+		row = Math.min(i, 2);
 
 		if (col * row >= arr.length) return [col, row];
 	}
