@@ -42,6 +42,10 @@ def download_game_stats(min_date: datetime, max_date: datetime) -> None:
             try:
                 doc["game_id"] = game_id
                 doc["last_update"] = datetime_parse(doc["last_update"])
+
+                for player in doc["players"]:
+                    player["player_count"] = doc["player_count"]
+
                 game = GameStats.model_validate(doc)
                 if game_id in games:
                     print("Game_id already present")

@@ -19,7 +19,8 @@ def load_stats(
     min_player_count: int | None = None,
     max_player_count: int | None = None,
     start_date: datetime | None = None,
-    end_date: datetime | None = None
+    end_date: datetime | None = None,
+    min_vp: int | None = None
 ) -> list[GameStats]:
     def load() -> list[GameStats]:
         with open(os.path.join("downloads", "game-stats.json"), "r") as f:
@@ -41,6 +42,16 @@ def load_stats(
         if max_player_count is not None and game.player_count > max_player_count:
             continue
 
+        if min_vp is not None:
+            invalid = False
+            for player in game.players:
+                if player.vp is None or player.vp < min_vp:
+                    invalid = True
+                    break
+
+            if invalid:
+                continue
+
         filtered_stats.append(game)
 
     return filtered_stats
@@ -52,21 +63,29 @@ class WinStats(BaseModel):
     average_position: float
     average_score: float
     faction: str
+    loses: int
 
     @computed_field  # type: ignore[prop-decorator]
     @property
     def win_rate(self) -> float:
         return self.wins / self.games
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def lose_rate(self) -> float:
+        return self.loses / self.games
+
 
 @app.command()
 def analyze_winrates(
-    min_player_count: int = 3,
+    min_vp: int | None = None,
+    min_player_count: int = 2,
     max_player_count: int = 5,
     start_date: datetime | None = None,
     end_date: datetime | None = None,
 ) -> None:
     stats = load_stats(
+        min_vp=min_vp,
         min_player_count=min_player_count,
         max_player_count=max_player_count,
         start_date=start_date,
@@ -93,6 +112,7 @@ def analyze_winrates(
         win_stats.append(
             WinStats(
                 wins=positions.count(1),
+                loses=sum([1 for p in stats_list if p.rank == p.player_count]),
                 games=len(positions),
                 average_position=sum(positions) / len(positions) if positions else -1,
                 average_score=sum(scores) / len(scores) if scores else -1,
@@ -101,7 +121,7 @@ def analyze_winrates(
         )
 
     table = Table(
-        "Faction", "Games", "Wins", "Win rate", "Average position", "Average score"
+        "Faction", "Games", "Wins", "Loses", "Win rate", "Lose rate", "Average position", "Average score"
     )
 
     win_stats.sort(key=lambda s: s.win_rate, reverse=True)
@@ -109,11 +129,13 @@ def analyze_winrates(
     for stat in win_stats:
         table.add_row(
             stat.faction,
-            str(stat.games),
-            str(stat.wins),
-            str(round(stat.win_rate, 2)),
-            str(round(stat.average_position, 2)),
-            str(round(stat.average_score, 2)),
+            f"{stat.games:_}",
+            f"{stat.wins:_}",
+            f"{stat.loses:_}",
+            f"{stat.win_rate:.2%}",
+            f"{stat.lose_rate:.2%}",
+            f"{stat.average_position:.2f}",
+            f"{stat.average_score:.2f}",
         )
 
     console.print(table)

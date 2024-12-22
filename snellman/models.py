@@ -11,6 +11,7 @@ class PlayerStats(BaseModel):
     rank: int
     start_order: int
     vp: int | None
+    player_count: int
 
 
 class GameStats(BaseModel):
